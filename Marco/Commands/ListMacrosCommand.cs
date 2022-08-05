@@ -28,7 +28,7 @@ internal sealed class ListMacrosCommand : ApplicationCommandModule
         IReadOnlyCollection<Macro> macros = _macroService.GetMacros(context.Guild);
         var embed = new DiscordEmbedBuilder();
         embed.WithColor(DiscordColor.CornflowerBlue);
-        embed.WithTitle($"{"Macro".ToQuantity(macros.Count)} macros available");
+        embed.WithTitle($"{"macro".ToQuantity(macros.Count)} available");
 
         if (macros.Count > 0)
         {
