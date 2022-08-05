@@ -47,7 +47,7 @@ Copy the example `config.example.json` to `data/config.json`, and assign the nec
 ```
 The `logs` directory is used to store logs in a format similar to that of a Minecraft server. `latest.log` will contain the log for the current day and current execution. All past logs are archived.
 
-The `data` directory is used to store persistent state of the bot, such as config values and the infraction database.
+The `data` directory is used to store persistent state of the bot, such as config values and the macro database.
 
 ### Launch Marco
 To launch Marco, simply run the following commands:
