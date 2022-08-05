@@ -1,0 +1,10 @@
+{
+  "GUILD_ID": {
+    "prefix": "[]",
+    "reactions": {
+      "successReaction": ":white_check_mark:",
+      "unknownReaction": null,
+      "cooldownReaction": ":hourglass_flowing_sand:"
+    }
+  }
+}
