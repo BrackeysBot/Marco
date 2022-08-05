@@ -71,6 +71,7 @@ internal sealed class BotService : BackgroundService
         slashCommands.RegisterCommands<AddMacroCommand>();
         slashCommands.RegisterCommands<DeleteMacroCommand>();
         slashCommands.RegisterCommands<EditMacroCommand>();
+        slashCommands.RegisterCommands<InfoCommand>();
         slashCommands.RegisterCommands<ListMacrosCommand>();
 
         Logger.Info("Connecting to Discord...");
