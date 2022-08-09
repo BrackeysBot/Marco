@@ -60,21 +60,14 @@ internal sealed class AddMacroCommand : ApplicationCommandModule
         DiscordModalResponse response =
             await modal.Build().RespondToAsync(context.Interaction, TimeSpan.FromMinutes(5)).ConfigureAwait(false);
 
-        if (response == DiscordModalResponse.Success)
-        {
-            Macro macro = await _macroService.CreateMacroAsync(guild, channel, name, responseInput.Value!).ConfigureAwait(false);
-            embed.WithColor(DiscordColor.Green);
-            embed.WithTitle("Macro added");
-            embed.WithDescription($"The macro `{macro.Name}` has been added.");
-            embed.AddField("Response", macro.Response);
-        }
-        else
-        {
-            embed.WithColor(DiscordColor.Red);
-            embed.WithTitle("Macro not added");
-            embed.WithDescription($"The macro '{name}' was not added because the response timed out.");
-        }
+        if (response != DiscordModalResponse.Success)
+            return;
 
+        Macro macro = await _macroService.CreateMacroAsync(guild, channel, name, responseInput.Value!).ConfigureAwait(false);
+        embed.WithColor(DiscordColor.Green);
+        embed.WithTitle("Macro added");
+        embed.WithDescription($"The macro `{macro.Name}` has been added.");
+        embed.AddField("Response", macro.Response);
         await context.FollowUpAsync(new DiscordFollowupMessageBuilder().AddEmbed(embed)).ConfigureAwait(false);
     }
 }

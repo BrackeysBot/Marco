@@ -62,13 +62,7 @@ internal sealed class EditMacroCommand : ApplicationCommandModule
             await modal.Build().RespondToAsync(context.Interaction, TimeSpan.FromMinutes(5)).ConfigureAwait(false);
 
         if (response != DiscordModalResponse.Success)
-        {
-            embed.WithColor(DiscordColor.Red);
-            embed.WithTitle("Macro not added");
-            embed.WithDescription($"The macro '{name}' was not added because the response timed out.");
-            await context.FollowUpAsync(new DiscordFollowupMessageBuilder().AddEmbed(embed)).ConfigureAwait(false);
             return;
-        }
 
         try
         {
