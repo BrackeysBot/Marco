@@ -295,7 +295,12 @@ internal sealed class MacroService : BackgroundService
         await using var context = scope.ServiceProvider.GetRequiredService<MarcoContext>();
 
         foreach (Macro macro in context.Macros.Where(m => m.GuildId == guild.Id))
+        {
             macros[macro.Name] = macro;
+            List<string> aliases = macro.Aliases;
+            for (var index = 0; index < aliases.Count; index++)
+                macros[aliases[index]] = macro;
+        }
     }
 
     /// <inheritdoc />
