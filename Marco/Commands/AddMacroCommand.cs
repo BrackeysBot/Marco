@@ -3,6 +3,7 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.SlashCommands.Attributes;
+using Humanizer;
 using Marco.Data;
 using Marco.Interactivity;
 using Marco.Services;
@@ -56,6 +57,8 @@ internal sealed class AddMacroCommand : ApplicationCommandModule
 
         var modal = new DiscordModalBuilder(context.Client);
         modal.WithTitle($"Add macro '{name}'");
+        DiscordModalTextInput aliasesInput =
+            modal.AddInput("Aliases (space-separated)", placeholder: "e.g. null nullreference nullref", isRequired: false);
         DiscordModalTextInput responseInput = modal.AddInput("Response", inputStyle: TextInputStyle.Paragraph);
         DiscordModalResponse response =
             await modal.Build().RespondToAsync(context.Interaction, TimeSpan.FromMinutes(5)).ConfigureAwait(false);
@@ -63,10 +66,13 @@ internal sealed class AddMacroCommand : ApplicationCommandModule
         if (response != DiscordModalResponse.Success)
             return;
 
-        Macro macro = await _macroService.CreateMacroAsync(guild, channel, name, responseInput.Value!).ConfigureAwait(false);
+        Macro macro = await _macroService
+            .CreateMacroAsync(guild, channel, name, responseInput.Value!, aliasesInput.Value?.Split()).ConfigureAwait(false);
         embed.WithColor(DiscordColor.Green);
         embed.WithTitle("Macro added");
         embed.WithDescription($"The macro `{macro.Name}` has been added.");
+        embed.AddField("Type", channel?.Mention ?? "Global", true);
+        embed.AddField("Alias".ToQuantity(macro.Aliases.Count), string.Join(' ', macro.Aliases), true);
         embed.AddField("Response", macro.Response);
         await context.FollowUpAsync(new DiscordFollowupMessageBuilder().AddEmbed(embed)).ConfigureAwait(false);
     }

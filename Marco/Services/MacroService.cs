@@ -7,6 +7,7 @@ using Marco.Data;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using X10D.Collections;
 
 namespace Marco.Services;
 
@@ -39,6 +40,7 @@ internal sealed class MacroService : BackgroundService
     /// </param>
     /// <param name="name">The name of the macro.</param>
     /// <param name="response">The bot response string.</param>
+    /// <param name="aliases">The aliases</param>
     /// <returns>The newly-created macro.</returns>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="guild" />, <paramref name="name" />, or <paramref name="response" />, is <see langword="null" />.
@@ -47,7 +49,13 @@ internal sealed class MacroService : BackgroundService
     ///     <paramref name="name" />, or <paramref name="response" />, is empty or consists only of whitespace.
     /// </exception>
     /// <exception cref="InvalidOperationException">A macro with the specified name already exists.</exception>
-    public async Task<Macro> CreateMacroAsync(DiscordGuild guild, DiscordChannel? channel, string name, string response)
+    public async Task<Macro> CreateMacroAsync(
+        DiscordGuild guild,
+        DiscordChannel? channel,
+        string name,
+        string response,
+        params string[]? aliases
+    )
     {
         ArgumentNullException.ThrowIfNull(guild);
         ArgumentNullException.ThrowIfNull(name);
@@ -67,6 +75,8 @@ internal sealed class MacroService : BackgroundService
 
         var macro = new Macro
         {
+            // ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
+            Aliases = new List<string>((aliases ?? ArraySegment<string>.Empty).WhereNot(string.IsNullOrWhiteSpace)),
             GuildId = guild.Id,
             ChannelId = channel?.Id,
             Name = Regex.Replace(name.ToLowerInvariant(), "\\s", string.Empty, RegexOptions.Compiled),
@@ -117,10 +127,11 @@ internal sealed class MacroService : BackgroundService
     /// </summary>
     /// <param name="guild">The guild whose macros to modify.</param>
     /// <param name="name">The name of the macro to modify.</param>
+    /// <param name="action">A function which defines the modification model for the macro.</param>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="guild" /> or <paramref name="name" /> is <see langword="null" />.
     /// </exception>
-    public async Task EditMacroAsync(DiscordGuild guild, string name, Action<Macro> action)
+    public async Task<Macro> EditMacroAsync(DiscordGuild guild, string name, Action<Macro> action)
     {
         ArgumentNullException.ThrowIfNull(guild);
         ArgumentNullException.ThrowIfNull(name);
@@ -130,11 +141,14 @@ internal sealed class MacroService : BackgroundService
             throw new InvalidOperationException("Macro does not exist");
 
         action(macro);
+        macro.Aliases = new List<string>(macro.Aliases?.WhereNot(string.IsNullOrWhiteSpace) ?? ArraySegment<string>.Empty);
 
         await using AsyncServiceScope scope = _scopeFactory.CreateAsyncScope();
         await using var context = scope.ServiceProvider.GetRequiredService<MarcoContext>();
         context.Update(macro);
         await context.SaveChangesAsync().ConfigureAwait(false);
+
+        return macro;
     }
 
     /// <summary>

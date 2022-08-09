@@ -2,6 +2,7 @@
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.SlashCommands.Attributes;
+using Humanizer;
 using Marco.AutocompleteProviders;
 using Marco.Data;
 using Marco.Interactivity;
@@ -55,6 +56,8 @@ internal sealed class EditMacroCommand : ApplicationCommandModule
         DiscordChannel? channel = null;
         DiscordModalTextInput channelInput =
             modal.AddInput("Channel ID", initialValue: macro.ChannelId?.ToString(), isRequired: false);
+        DiscordModalTextInput aliasesInput =
+            modal.AddInput("Aliases (space-separated)", placeholder: "e.g. null nullreference nullref", isRequired: false);
         DiscordModalTextInput responseInput =
             modal.AddInput("Response", initialValue: macro.Response, inputStyle: TextInputStyle.Paragraph);
 
@@ -66,8 +69,9 @@ internal sealed class EditMacroCommand : ApplicationCommandModule
 
         try
         {
-            await _macroService.EditMacroAsync(context.Guild, name, m =>
+            macro = await _macroService.EditMacroAsync(context.Guild, name, m =>
             {
+                m.Aliases = new List<string>(aliasesInput.Value?.Split() ?? ArraySegment<string>.Empty);
                 m.Response = responseInput.Value!;
 
                 if (string.IsNullOrWhiteSpace(channelInput.Value) || !ulong.TryParse(channelInput.Value, out ulong channelId))
@@ -81,6 +85,7 @@ internal sealed class EditMacroCommand : ApplicationCommandModule
             embed.WithDescription($"The macro `{name}` has been edited.");
             embed.AddField("Name", macro.Name, true);
             embed.AddField("Type", channel?.Mention ?? "Global", true);
+            embed.AddField("Alias".ToQuantity(macro.Aliases.Count), string.Join(' ', macro.Aliases), true);
             embed.AddField("Response", responseInput.Value);
         }
         catch (Exception exception)
