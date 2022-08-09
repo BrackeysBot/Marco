@@ -80,7 +80,7 @@ internal sealed class MacroListeningService : BackgroundService
 
         if (_macroService.TryGetChannelMacro(channel, command, out Macro? macro))
         {
-            if (_cooldownService.IsOnCooldown(channel, command))
+            if (_cooldownService.IsOnCooldown(channel, macro))
             {
                 Logger.Info($"{e.Author} used channel macro '{command}' in {channel} but is on cooldown");
 
@@ -94,13 +94,13 @@ internal sealed class MacroListeningService : BackgroundService
                 if (successEmoji is not null)
                     await e.Message.CreateReactionAsync(successEmoji).ConfigureAwait(false);
 
-                _cooldownService.UpdateCooldown(channel, command);
+                _cooldownService.UpdateCooldown(channel, macro);
                 await channel.SendMessageAsync(macro.Response).ConfigureAwait(false);
             }
         }
         else if (_macroService.TryGetGlobalMacro(guild, command, out macro))
         {
-            if (_cooldownService.IsOnCooldown(channel, command))
+            if (_cooldownService.IsOnCooldown(channel, macro))
             {
                 Logger.Info($"{e.Author} used global macro '{command}' in {channel} but is on cooldown");
 
@@ -114,7 +114,7 @@ internal sealed class MacroListeningService : BackgroundService
                 if (successEmoji is not null)
                     await e.Message.CreateReactionAsync(successEmoji).ConfigureAwait(false);
 
-                _cooldownService.UpdateCooldown(channel, command);
+                _cooldownService.UpdateCooldown(channel, macro);
                 await channel.SendMessageAsync(macro.Response).ConfigureAwait(false);
             }
         }
