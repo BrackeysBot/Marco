@@ -1,4 +1,5 @@
 <h1 align="center">Marco</h1>
+<p align="center"><img src="icon.png" width="128"></p>
 <p align="center"><i>Marco? Polo! A Discord bot for creating automated responses (aka macros / custom commands).</i></p>
 <p align="center">
 <a href="https://github.com/BrackeysBot/Marco/releases"><img src="https://img.shields.io/github/v/release/BrackeysBot/Marco?include_prereleases"></a>
