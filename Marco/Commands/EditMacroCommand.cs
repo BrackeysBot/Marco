@@ -35,7 +35,7 @@ internal sealed class EditMacroCommand : ApplicationCommandModule
         if (string.IsNullOrWhiteSpace(name))
         {
             embed.WithColor(DiscordColor.Red);
-            embed.WithTitle("Cannot delete macro");
+            embed.WithTitle("Cannot edit macro");
             embed.WithDescription("No name was specified.");
             await context.CreateResponseAsync(embed, true).ConfigureAwait(false);
             return;
@@ -44,14 +44,14 @@ internal sealed class EditMacroCommand : ApplicationCommandModule
         if (!_macroService.TryGetMacro(context.Guild, name, out Macro? macro))
         {
             embed.WithColor(DiscordColor.Red);
-            embed.WithTitle("Cannot delete macro");
+            embed.WithTitle("Cannot edit macro");
             embed.WithDescription($"No macro with the name `{name}` was found.");
             await context.CreateResponseAsync(embed, true).ConfigureAwait(false);
             return;
         }
 
         var modal = new DiscordModalBuilder(context.Client);
-        modal.WithTitle($"Add macro '{name}'");
+        modal.WithTitle($"Edit macro '{name}'");
 
         DiscordChannel? channel = null;
         DiscordModalTextInput channelInput =
