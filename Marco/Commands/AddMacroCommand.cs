@@ -27,22 +27,12 @@ internal sealed class AddMacroCommand : ApplicationCommandModule
     [SlashRequireGuild]
     public async Task AddMacro(
         InteractionContext context,
-        [Option("name", "The name of the macro.")] string name,
-        [Option("channel", "The channel to which the macro will be limited.")] DiscordChannel? channel = null
+        [Option("name", "The name of the macro.")] string name
     )
     {
         var embed = new DiscordEmbedBuilder();
 
         DiscordGuild guild = context.Guild;
-
-        if (channel is not null && channel.Guild != guild)
-        {
-            embed.WithColor(DiscordColor.Red);
-            embed.WithTitle("Cannot add macro");
-            embed.WithDescription("The channel is not in this guild.");
-            await context.CreateResponseAsync(embed, true).ConfigureAwait(false);
-            return;
-        }
 
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -67,11 +57,11 @@ internal sealed class AddMacroCommand : ApplicationCommandModule
             return;
 
         Macro macro = await _macroService
-            .CreateMacroAsync(guild, channel, name, responseInput.Value!, aliasesInput.Value?.Split()).ConfigureAwait(false);
+            .CreateMacroAsync(guild, null, name, responseInput.Value!, aliasesInput.Value?.Split()).ConfigureAwait(false);
         embed.WithColor(DiscordColor.Green);
         embed.WithTitle("Macro added");
         embed.WithDescription($"The macro `{macro.Name}` has been added.");
-        embed.AddField("Type", channel?.Mention ?? "Global", true);
+        embed.AddField("Type", "Global", true);
         embed.AddField("Alias".ToQuantity(macro.Aliases.Count), string.Join(' ', macro.Aliases), true);
         embed.AddField("Response", macro.Response);
         await context.FollowUpAsync(new DiscordFollowupMessageBuilder().AddEmbed(embed)).ConfigureAwait(false);

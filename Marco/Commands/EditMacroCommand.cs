@@ -54,8 +54,6 @@ internal sealed class EditMacroCommand : ApplicationCommandModule
         modal.WithTitle($"Edit macro '{name}'");
 
         DiscordChannel? channel = null;
-        DiscordModalTextInput channelInput =
-            modal.AddInput("Channel ID", initialValue: macro.ChannelId?.ToString(), isRequired: false);
         DiscordModalTextInput aliasesInput =
             modal.AddInput("Aliases (space-separated)", placeholder: "e.g. null nullreference nullref", isRequired: false);
         DiscordModalTextInput responseInput =
@@ -73,11 +71,6 @@ internal sealed class EditMacroCommand : ApplicationCommandModule
             {
                 m.Aliases = new List<string>(aliasesInput.Value?.Split() ?? ArraySegment<string>.Empty);
                 m.Response = responseInput.Value!;
-
-                if (string.IsNullOrWhiteSpace(channelInput.Value) || !ulong.TryParse(channelInput.Value, out ulong channelId))
-                    m.ChannelId = null;
-                else if (context.Guild.Channels.TryGetValue(channelId, out channel))
-                    m.ChannelId = channel?.Id;
             }).ConfigureAwait(false);
 
             embed.WithColor(DiscordColor.Green);
