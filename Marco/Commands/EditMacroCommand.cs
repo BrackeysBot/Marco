@@ -7,6 +7,7 @@ using Marco.AutocompleteProviders;
 using Marco.Data;
 using Marco.Interactivity;
 using Marco.Services;
+using X10D.DSharpPlus;
 
 namespace Marco.Commands;
 
@@ -78,7 +79,7 @@ internal sealed class EditMacroCommand : ApplicationCommandModule
             embed.WithDescription($"The macro `{name}` has been edited.");
             embed.AddField("Name", macro.Name, true);
             embed.AddField("Type", channel?.Mention ?? "Global", true);
-            embed.AddField("Alias".ToQuantity(macro.Aliases.Count), string.Join(' ', macro.Aliases), true);
+            embed.AddFieldIf(macro.Aliases.Count > 0 , "Alias".ToQuantity(macro.Aliases.Count), string.Join(' ', macro.Aliases), true);
             embed.AddField("Response", responseInput.Value);
         }
         catch (Exception exception)
