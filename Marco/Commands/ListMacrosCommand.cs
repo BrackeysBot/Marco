@@ -25,7 +25,7 @@ internal sealed class ListMacrosCommand : ApplicationCommandModule
     [SlashRequireGuild]
     public async Task ListMacrosAsync(InteractionContext context)
     {
-        IReadOnlyCollection<Macro> macros = _macroService.GetMacros(context.Guild);
+        IReadOnlyCollection<Macro> macros = _macroService.GetMacros(context.Guild).Distinct().ToArray();
         var embed = new DiscordEmbedBuilder();
         embed.WithColor(DiscordColor.CornflowerBlue);
         embed.WithTitle($"{"macro".ToQuantity(macros.Count)} available");
