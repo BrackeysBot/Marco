@@ -7,6 +7,7 @@ using Humanizer;
 using Marco.Data;
 using Marco.Interactivity;
 using Marco.Services;
+using X10D.DSharpPlus;
 
 namespace Marco.Commands;
 
@@ -62,7 +63,7 @@ internal sealed class AddMacroCommand : ApplicationCommandModule
         embed.WithTitle("Macro added");
         embed.WithDescription($"The macro `{macro.Name}` has been added.");
         embed.AddField("Type", "Global", true);
-        embed.AddField("Alias".ToQuantity(macro.Aliases.Count), string.Join(' ', macro.Aliases), true);
+        embed.AddFieldIf(macro.Aliases.Count > 0, "Alias".ToQuantity(macro.Aliases.Count), string.Join(' ', macro.Aliases), true);
         embed.AddField("Response", macro.Response);
         await context.FollowUpAsync(new DiscordFollowupMessageBuilder().AddEmbed(embed)).ConfigureAwait(false);
     }
