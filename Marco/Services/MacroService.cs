@@ -94,6 +94,9 @@ internal sealed class MacroService : BackgroundService
         }
 
         macros[macro.Name] = macro;
+        foreach (string alias in macro.Aliases)
+            macros[alias] = macro;
+
         return macro;
     }
 
@@ -114,7 +117,11 @@ internal sealed class MacroService : BackgroundService
             return;
 
         if (_macros.TryGetValue(guild, out Dictionary<string, Macro>? macros))
+        {
             macros.Remove(macro.Name);
+            foreach (string alias in macro.Aliases)
+                macros.Remove(alias);
+        }
 
         await using AsyncServiceScope scope = _scopeFactory.CreateAsyncScope();
         await using var context = scope.ServiceProvider.GetRequiredService<MarcoContext>();
@@ -140,8 +147,19 @@ internal sealed class MacroService : BackgroundService
         if (!TryGetMacro(guild, name, out Macro? macro))
             throw new InvalidOperationException("Macro does not exist");
 
+        string[] aliases = macro.Aliases?.WhereNot(string.IsNullOrWhiteSpace).ToArray() ?? Array.Empty<string>();
+
         action(macro);
         macro.Aliases = new List<string>(macro.Aliases?.WhereNot(string.IsNullOrWhiteSpace) ?? ArraySegment<string>.Empty);
+
+        if (_macros.TryGetValue(guild, out Dictionary<string, Macro>? macros))
+        {
+            foreach (string alias in aliases)
+                macros.Remove(alias);
+
+            foreach (string alias in macro.Aliases)
+                macros.Add(alias, macro);
+        }
 
         await using AsyncServiceScope scope = _scopeFactory.CreateAsyncScope();
         await using var context = scope.ServiceProvider.GetRequiredService<MarcoContext>();

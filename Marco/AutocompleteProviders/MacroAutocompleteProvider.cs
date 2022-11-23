@@ -12,7 +12,7 @@ internal sealed class MacroAutocompleteProvider : IAutocompleteProvider
     public Task<IEnumerable<DiscordAutoCompleteChoice>> Provider(AutocompleteContext ctx)
     {
         var macroService = ctx.Services.GetRequiredService<MacroService>();
-        IReadOnlyCollection<Macro> macros = macroService.GetMacros(ctx.Guild);
+        IEnumerable<Macro> macros = macroService.GetMacros(ctx.Guild).Distinct();
         return Task.FromResult(macros.Select(macro => new DiscordAutoCompleteChoice(macro.Name, macro.Name)));
     }
 }

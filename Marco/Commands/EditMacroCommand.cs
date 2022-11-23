@@ -56,7 +56,7 @@ internal sealed class EditMacroCommand : ApplicationCommandModule
 
         DiscordChannel? channel = null;
         DiscordModalTextInput aliasesInput =
-            modal.AddInput("Aliases (space-separated)", placeholder: "e.g. null nullreference nullref", isRequired: false);
+            modal.AddInput("Aliases (space-separated)", placeholder: "e.g. null nullreference nullref", isRequired: false, initialValue: string.Join(' ', macro.Aliases));
         DiscordModalTextInput responseInput =
             modal.AddInput("Response", initialValue: macro.Response, inputStyle: TextInputStyle.Paragraph);
 
