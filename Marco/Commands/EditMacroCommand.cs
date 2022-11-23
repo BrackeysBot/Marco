@@ -80,7 +80,11 @@ internal sealed class EditMacroCommand : ApplicationCommandModule
             embed.AddField("Name", macro.Name, true);
             embed.AddField("Type", channel?.Mention ?? "Global", true);
             embed.AddFieldIf(macro.Aliases.Count > 0 , "Alias".ToQuantity(macro.Aliases.Count), string.Join(' ', macro.Aliases), true);
-            embed.AddField("Response", responseInput.Value);
+
+            string? value = responseInput.Value;
+            if (value is {Length: > 1024})
+                value = $"{value[..1021]}...";
+            embed.AddField("Response", value);
         }
         catch (Exception exception)
         {

@@ -64,7 +64,12 @@ internal sealed class AddMacroCommand : ApplicationCommandModule
         embed.WithDescription($"The macro `{macro.Name}` has been added.");
         embed.AddField("Type", "Global", true);
         embed.AddFieldIf(macro.Aliases.Count > 0, "Alias".ToQuantity(macro.Aliases.Count), string.Join(' ', macro.Aliases), true);
-        embed.AddField("Response", macro.Response);
+
+        string value = macro.Response;
+        if (value is {Length: > 1024})
+            value = $"{value[..1021]}...";
+        embed.AddField("Response", value);
+
         await context.FollowUpAsync(new DiscordFollowupMessageBuilder().AddEmbed(embed)).ConfigureAwait(false);
     }
 }
