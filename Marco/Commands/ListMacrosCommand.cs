@@ -40,7 +40,7 @@ internal sealed class ListMacrosCommand : ApplicationCommandModule
                     ? (await context.Client.GetChannelAsync(grouping.Key.Value).ConfigureAwait(false)).Name
                     : "Global";
 
-                foreach (Macro macro in grouping)
+                foreach (Macro macro in grouping.OrderBy(m => m.Name))
                     names.Add(macro.Name);
 
                 embed.AddField(type, Formatter.BlockCode(string.Join('\n', names)), true);
