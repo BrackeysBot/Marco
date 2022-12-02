@@ -32,15 +32,15 @@ internal sealed class ListMacrosCommand : ApplicationCommandModule
 
         if (macros.Count > 0)
         {
-            foreach (IGrouping<ulong?, Macro>[] groupings in macros.GroupBy(m => m.ChannelId).Chunk(20))
-            foreach (IGrouping<ulong?, Macro> grouping in groupings)
+            foreach (IGrouping<ulong?, Macro> grouping in macros.GroupBy(m => m.ChannelId))
+            foreach (Macro[] group in grouping.Chunk(20))
             {
                 var names = new List<string>();
                 string type = grouping.Key.HasValue
                     ? (await context.Client.GetChannelAsync(grouping.Key.Value).ConfigureAwait(false)).Name
                     : "Global";
 
-                foreach (Macro macro in grouping.OrderBy(m => m.Name))
+                foreach (Macro macro in group.OrderBy(m => m.Name))
                     names.Add(macro.Name);
 
                 embed.AddField(type, Formatter.BlockCode(string.Join('\n', names)), true);
