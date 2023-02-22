@@ -5,6 +5,7 @@ using Marco.Configuration;
 using Marco.Data;
 using Microsoft.Extensions.Hosting;
 using NLog;
+using SmartFormat;
 
 namespace Marco.Services;
 
@@ -115,7 +116,14 @@ internal sealed class MacroListeningService : BackgroundService
                     await e.Message.CreateReactionAsync(successEmoji).ConfigureAwait(false);
 
                 _cooldownService.UpdateCooldown(channel, macro);
-                await channel.SendMessageAsync(macro.Response).ConfigureAwait(false);
+                string response = Smart.Format(macro.Response, new
+                {
+                    args = content[spaceIndex..].Split(),
+                    channel,
+                    guild,
+                    user = (DiscordMember) e.Message.Author
+                });
+                await channel.SendMessageAsync(response).ConfigureAwait(false);
             }
         }
         else
