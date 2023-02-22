@@ -2,14 +2,13 @@ version: '3.9'
 services:
   marco:
     container_name: Marco
-    build: .
+    pull_policy: build
+    build: https://github.com/BrackeysBot/Marco.git#main
     volumes:
       - type: bind
-        source: ./logs
+        source: /var/log/brackeysbot/marco
         target: /app/logs
       - type: bind
-        source: ./data
+        source: /etc/brackeysbot/marco
         target: /app/data
     restart: always
-    env_file:
-      - .env
