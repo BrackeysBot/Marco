@@ -57,14 +57,13 @@ internal sealed class MacroListeningService : BackgroundService
         if (!_configurationService.TryGetGuildConfiguration(guild, out GuildConfiguration? guildConfiguration))
             guildConfiguration = new GuildConfiguration();
 
-        if (!content.StartsWith(guildConfiguration.Prefix))
+        string prefix = guildConfiguration.Prefix;
+        if (!content.StartsWith(prefix))
             return;
 
         int spaceIndex = content.IndexOf(' ');
 
-        string command = spaceIndex < 0
-            ? content[guildConfiguration.Prefix.Length..]
-            : content[guildConfiguration.Prefix.Length..spaceIndex];
+        string command = spaceIndex < 0 ? content[prefix.Length..] : content[prefix.Length..spaceIndex];
 
         string? cooldownReaction = guildConfiguration.ReactionConfiguration.CooldownReaction;
         string? successReaction = guildConfiguration.ReactionConfiguration.SuccessReaction;
@@ -116,9 +115,11 @@ internal sealed class MacroListeningService : BackgroundService
                     await e.Message.CreateReactionAsync(successEmoji).ConfigureAwait(false);
 
                 _cooldownService.UpdateCooldown(channel, macro);
+
+                int argIndex = spaceIndex < 0 ? prefix.Length + command.Length : spaceIndex;
                 string response = Smart.Format(macro.Response, new
                 {
-                    args = content[spaceIndex..].Split(),
+                    args = content[argIndex..].Split(),
                     channel,
                     guild,
                     user = (DiscordMember) e.Message.Author
