@@ -7,6 +7,7 @@ using Marco.Data;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NLog;
 using X10D.Collections;
 
 namespace Marco.Services;
@@ -16,6 +17,7 @@ namespace Marco.Services;
 /// </summary>
 internal sealed class MacroService : BackgroundService
 {
+    private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly DiscordClient _discordClient;
     private readonly Dictionary<DiscordGuild, Dictionary<string, Macro>> _macros = new();
@@ -319,6 +321,8 @@ internal sealed class MacroService : BackgroundService
             for (var index = 0; index < aliases.Count; index++)
                 macros[aliases[index]] = macro;
         }
+
+        Logger.Info($"Loaded {macros.Count} macros for {guild}");
     }
 
     /// <inheritdoc />
