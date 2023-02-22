@@ -116,15 +116,16 @@ internal sealed class MacroListeningService : BackgroundService
 
                 _cooldownService.UpdateCooldown(channel, macro);
 
-                int argIndex = spaceIndex < 0 ? prefix.Length + command.Length : spaceIndex;
+                // TODO revisit this feature
+                /*int argIndex = spaceIndex < 0 ? prefix.Length + command.Length : spaceIndex;
                 string response = Smart.Format(macro.Response, new
                 {
                     args = content[argIndex..].Split(),
                     channel,
                     guild,
                     user = (DiscordMember) e.Message.Author
-                });
-                await channel.SendMessageAsync(response).ConfigureAwait(false);
+                });*/
+                await channel.SendMessageAsync(macro.Response).ConfigureAwait(false);
             }
         }
         else
