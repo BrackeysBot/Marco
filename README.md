@@ -2,10 +2,10 @@
 <p align="center"><img src="icon.png" width="128"></p>
 <p align="center"><i>Marco? Polo! A Discord bot for creating automated responses (aka macros / custom commands).</i></p>
 <p align="center">
-<a href="https://github.com/BrackeysBot/Marco/releases"><img src="https://img.shields.io/github/v/release/BrackeysBot/Marco?include_prereleases"></a>
-<a href="https://github.com/BrackeysBot/Marco/actions/workflows/dotnet.yml"><img src="https://img.shields.io/github/actions/workflow/status/BrackeysBot/Marco/dotnet.yml?branch=main" alt="GitHub Workflow Status" title="GitHub Workflow Status"></a>
-<a href="https://github.com/BrackeysBot/Marco/issues"><img src="https://img.shields.io/github/issues/BrackeysBot/Marco" alt="GitHub Issues" title="GitHub Issues"></a>
-<a href="https://github.com/BrackeysBot/Marco/blob/main/LICENSE.md"><img src="https://img.shields.io/github/license/BrackeysBot/Marco" alt="MIT License" title="MIT License"></a>
+<a href="https://github.com/BrackeysBot/Marco/releases"><img src="https://img.shields.io/github/v/release/BrackeysBot/Marco?include_prereleases&style=flat-square"></a>
+<a href="https://github.com/BrackeysBot/Marco/actions/workflows/dotnet.yml"><img src="https://img.shields.io/github/actions/workflow/status/BrackeysBot/Marco/dotnet.yml?branch=main&style=flat-square" alt="GitHub Workflow Status" title="GitHub Workflow Status"></a>
+<a href="https://github.com/BrackeysBot/Marco/issues"><img src="https://img.shields.io/github/issues/BrackeysBot/Marco?style=flat-square" alt="GitHub Issues" title="GitHub Issues"></a>
+<a href="https://github.com/BrackeysBot/Marco/blob/main/LICENSE.md"><img src="https://img.shields.io/github/license/BrackeysBot/Marco?style=flat-square" alt="MIT License" title="MIT License"></a>
 </p>
 
 ## About
