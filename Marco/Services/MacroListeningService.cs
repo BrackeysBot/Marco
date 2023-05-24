@@ -5,7 +5,6 @@ using Marco.Configuration;
 using Marco.Data;
 using Microsoft.Extensions.Hosting;
 using NLog;
-using SmartFormat;
 
 namespace Marco.Services;
 

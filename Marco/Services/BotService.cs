@@ -73,6 +73,7 @@ internal sealed class BotService : BackgroundService
         slashCommands.RegisterCommands<EditMacroCommand>();
         slashCommands.RegisterCommands<InfoCommand>();
         slashCommands.RegisterCommands<ListMacrosCommand>();
+        slashCommands.RegisterCommands<MacroCommand>();
 
         Logger.Info("Connecting to Discord...");
         _discordClient.Ready += OnReady;
