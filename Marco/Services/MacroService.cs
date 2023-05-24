@@ -180,7 +180,9 @@ internal sealed class MacroService : BackgroundService
     public IReadOnlyCollection<Macro> GetMacros(DiscordGuild guild)
     {
         ArgumentNullException.ThrowIfNull(guild);
-        return _macros.TryGetValue(guild, out Dictionary<string, Macro>? macros) ? macros.Values : ArraySegment<Macro>.Empty;
+        return _macros.TryGetValue(guild, out Dictionary<string, Macro>? macros)
+            ? macros.Values.Distinct().ToArray()
+            : ArraySegment<Macro>.Empty;
     }
 
     /// <summary>
@@ -195,7 +197,7 @@ internal sealed class MacroService : BackgroundService
         ArgumentNullException.ThrowIfNull(channel);
         if (channel.Guild is not { } guild) throw new ArgumentException("Channel must be in a guild", nameof(channel));
         return _macros.TryGetValue(guild, out Dictionary<string, Macro>? macros)
-            ? macros.Values.Where(m => m.ChannelId == channel.Id).ToArray()
+            ? macros.Values.Where(m => m.ChannelId == channel.Id).Distinct().ToArray()
             : ArraySegment<Macro>.Empty;
     }
 

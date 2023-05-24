@@ -25,7 +25,7 @@ internal sealed class MacroAutocompleteProvider : IAutocompleteProvider
                 continue;
             }
 
-            if (hasOptionValue && !macro.Name.Contains(optionValue))
+            if (hasOptionValue && !macro.Name.Contains(optionValue) && !macro.Aliases.Contains(optionValue))
             {
                 continue;
             }

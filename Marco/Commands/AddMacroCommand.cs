@@ -46,6 +46,15 @@ internal sealed class AddMacroCommand : ApplicationCommandModule
 
         name = Regex.Replace(name.ToLowerInvariant(), "\\s", string.Empty, RegexOptions.Compiled);
 
+        if (_macroService.TryGetMacro(guild, name, out _))
+        {
+            embed.WithColor(DiscordColor.Red);
+            embed.WithTitle("Cannot add macro");
+            embed.WithDescription($"A macro with the name or alias `{name}` already exists.");
+            await context.CreateResponseAsync(embed, true).ConfigureAwait(false);
+            return;
+        }
+
         var modal = new DiscordModalBuilder(context.Client);
         modal.WithTitle($"Add macro '{name}'");
         DiscordModalTextInput aliasesInput =
@@ -57,11 +66,33 @@ internal sealed class AddMacroCommand : ApplicationCommandModule
         if (response != DiscordModalResponse.Success)
             return;
 
+        var aliases = new List<string>(aliasesInput.Value?.Split() ?? ArraySegment<string>.Empty);
+        var invalidAliases = new List<string>();
+
+        if (aliases.Count > 0)
+        {
+            for (int index = aliases.Count - 1; index >= 0; index--)
+            {
+                string current = aliases[index];
+                if (_macroService.TryGetMacro(guild, current, out _))
+                {
+                    aliases.RemoveAt(index);
+                    invalidAliases.Add(current);
+                }
+            }
+        }
+
         Macro macro = await _macroService
-            .CreateMacroAsync(guild, null, name, responseInput.Value!, aliasesInput.Value?.Split()).ConfigureAwait(false);
+            .CreateMacroAsync(guild, null, name, responseInput.Value!, aliases.ToArray()).ConfigureAwait(false);
         embed.WithColor(DiscordColor.Green);
         embed.WithTitle("Macro added");
         embed.WithDescription($"The macro `{macro.Name}` has been added.");
+        if (invalidAliases.Count > 0)
+        {
+            embed.Description += "\n\n⚠️ The following aliases were not added because they already exist: " +
+                                 string.Join(", ", invalidAliases.Select(a => $"`{a}`"));
+        }
+
         embed.AddField("Type", "Global", true);
         embed.AddFieldIf(macro.Aliases.Count > 0, "Alias".ToQuantity(macro.Aliases.Count), string.Join(' ', macro.Aliases), true);
 
