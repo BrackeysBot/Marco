@@ -26,7 +26,7 @@ internal sealed class MacroCommand : ApplicationCommandModule
     {
         if (!_macroService.TryGetMacro(context.Guild, macroName, out Macro? macro))
         {
-            await context.CreateResponseAsync($"The macro `{macroName}` doesn't exist", true).ConfigureAwait(false);
+            await context.CreateResponseAsync($"The macro `{macroName}` doesn't exist.", true).ConfigureAwait(false);
             return;
         }
 
