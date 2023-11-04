@@ -1,4 +1,5 @@
-﻿using DSharpPlus.SlashCommands;
+﻿using DSharpPlus.Entities;
+using DSharpPlus.SlashCommands;
 using DSharpPlus.SlashCommands.Attributes;
 using Marco.AutocompleteProviders;
 using Marco.Data;
@@ -22,7 +23,8 @@ internal sealed class MacroCommand : ApplicationCommandModule
     [SlashCommand("macro", "Executes a macro.")]
     [SlashRequireGuild]
     public async Task MacroAsync(InteractionContext context,
-        [Option("macro", "The name of the macro.", true)] [Autocomplete(typeof(MacroAutocompleteProvider))] string macroName)
+        [Option("macro", "The name of the macro.", true)] [Autocomplete(typeof(MacroAutocompleteProvider))]
+        string macroName)
     {
         if (!_macroService.TryGetMacro(context.Guild, macroName, out Macro? macro))
         {
@@ -36,6 +38,16 @@ internal sealed class MacroCommand : ApplicationCommandModule
             return;
         }
 
-        await context.CreateResponseAsync(macro.Response).ConfigureAwait(false);
+        var builder = new DiscordInteractionResponseBuilder();
+        string response = macro.Response;
+
+        if (response.StartsWith("@silent "))
+        {
+            response = response[8..];
+            builder.SuppressNotifications();
+        }
+
+        builder.WithContent(response);
+        await context.CreateResponseAsync(builder).ConfigureAwait(false);
     }
 }

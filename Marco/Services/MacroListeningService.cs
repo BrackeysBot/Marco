@@ -124,7 +124,18 @@ internal sealed class MacroListeningService : BackgroundService
                     guild,
                     user = (DiscordMember) e.Message.Author
                 });*/
-                await channel.SendMessageAsync(macro.Response).ConfigureAwait(false);
+
+                var builder = new DiscordMessageBuilder();
+                string response = macro.Response;
+
+                if (response.StartsWith("@silent "))
+                {
+                    response = response[8..];
+                    builder.SuppressNotifications();
+                }
+
+                builder.WithContent(response);
+                await channel.SendMessageAsync(builder).ConfigureAwait(false);
             }
         }
         else
