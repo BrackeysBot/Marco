@@ -20,32 +20,28 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 
-await Host.CreateDefaultBuilder(args)
-    .ConfigureAppConfiguration(builder => builder.AddJsonFile("data/config.json", true, true))
-    .ConfigureLogging(builder =>
-    {
-        builder.ClearProviders();
-        builder.AddSerilog();
-    })
-    .ConfigureServices(services =>
-    {
-        services.AddSingleton(new DiscordClient(new DiscordConfiguration
-        {
-            Token = Environment.GetEnvironmentVariable("DISCORD_TOKEN"),
-            LoggerFactory = new SerilogLoggerFactory(),
-            Intents = DiscordIntents.AllUnprivileged | DiscordIntents.GuildMessages | DiscordIntents.MessageContents
-        }));
+HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
+builder.Configuration.AddJsonFile("data/config.json", true, true);
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog();
 
-        services.AddSingleton<HttpClient>();
-        services.AddSingleton<ConfigurationService>();
-        services.AddSingleton<MacroCooldownService>();
+builder.Services.AddSingleton(new DiscordClient(new DiscordConfiguration
+{
+    Token = Environment.GetEnvironmentVariable("DISCORD_TOKEN"),
+    LoggerFactory = new SerilogLoggerFactory(),
+    Intents = DiscordIntents.AllUnprivileged | DiscordIntents.GuildMessages | DiscordIntents.MessageContents
+}));
 
-        services.AddHostedSingleton<MacroListeningService>();
-        services.AddHostedSingleton<MacroService>();
+builder.Services.AddSingleton<HttpClient>();
+builder.Services.AddSingleton<ConfigurationService>();
+builder.Services.AddSingleton<MacroCooldownService>();
 
-        services.AddDbContext<MarcoContext>();
+builder.Services.AddHostedSingleton<MacroListeningService>();
+builder.Services.AddHostedSingleton<MacroService>();
 
-        services.AddHostedSingleton<BotService>();
-    })
-    .UseConsoleLifetime()
-    .RunConsoleAsync();
+builder.Services.AddDbContext<MarcoContext>();
+
+builder.Services.AddHostedSingleton<BotService>();
+
+IHost app = builder.Build();
+await app.RunAsync();
