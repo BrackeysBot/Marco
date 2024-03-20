@@ -19,7 +19,6 @@ Log.Logger = new LoggerConfiguration()
 #endif
     .CreateLogger();
 
-
 HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 builder.Configuration.AddJsonFile("data/config.json", true, true);
 builder.Logging.ClearProviders();
