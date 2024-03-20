@@ -4,7 +4,7 @@ using DSharpPlus.EventArgs;
 using Marco.Configuration;
 using Marco.Data;
 using Microsoft.Extensions.Hosting;
-using NLog;
+using Microsoft.Extensions.Logging;
 
 namespace Marco.Services;
 
@@ -13,8 +13,7 @@ namespace Marco.Services;
 /// </summary>
 internal sealed class MacroListeningService : BackgroundService
 {
-    private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
-
+    private readonly ILogger<MacroListeningService> _logger;
     private readonly DiscordClient _discordClient;
     private readonly ConfigurationService _configurationService;
     private readonly MacroService _macroService;
@@ -23,17 +22,20 @@ internal sealed class MacroListeningService : BackgroundService
     /// <summary>
     ///     Initializes a new instance of the <see cref="MacroListeningService" /> class.
     /// </summary>
+    /// <param name="logger">The logger.</param>
     /// <param name="discordClient">The Discord client.</param>
     /// <param name="configurationService">The configuration service.</param>
     /// <param name="macroService">The macro service.</param>
     /// <param name="cooldownService">The macro cooldown service.</param>
     public MacroListeningService(
+        ILogger<MacroListeningService> logger,
         DiscordClient discordClient,
         ConfigurationService configurationService,
         MacroService macroService,
         MacroCooldownService cooldownService
     )
     {
+        _logger = logger;
         _discordClient = discordClient;
         _configurationService = configurationService;
         _macroService = macroService;
@@ -81,14 +83,14 @@ internal sealed class MacroListeningService : BackgroundService
         {
             if (_cooldownService.IsOnCooldown(channel, macro))
             {
-                Logger.Info($"{e.Author} used channel macro '{command}' in {channel} but is on cooldown");
+                _logger.LogInformation("{Author} used channel macro \'{Command}\' in {Channel} but is on cooldown", e.Author, command, channel);
 
                 if (cooldownEmoji is not null)
                     await e.Message.CreateReactionAsync(cooldownEmoji).ConfigureAwait(false);
             }
             else
             {
-                Logger.Info($"{e.Author} used channel macro '{command}' in {channel}");
+                _logger.LogInformation("{Author} used channel macro \'{Command}\' in {Channel}", e.Author, command, channel);
 
                 if (successEmoji is not null)
                     await e.Message.CreateReactionAsync(successEmoji).ConfigureAwait(false);
@@ -101,14 +103,14 @@ internal sealed class MacroListeningService : BackgroundService
         {
             if (_cooldownService.IsOnCooldown(channel, macro))
             {
-                Logger.Info($"{e.Author} used global macro '{command}' in {channel} but is on cooldown");
+                _logger.LogInformation("{Author} used global macro \'{Command}\' in {Channel} but is on cooldown", e.Author, command, channel);
 
                 if (cooldownEmoji is not null)
                     await e.Message.CreateReactionAsync(cooldownEmoji).ConfigureAwait(false);
             }
             else
             {
-                Logger.Info($"{e.Author} used global macro '{command}' in {channel}");
+                _logger.LogInformation("{Author} used global macro \'{Command}\' in {Channel}", e.Author, command, channel);
 
                 if (successEmoji is not null)
                     await e.Message.CreateReactionAsync(successEmoji).ConfigureAwait(false);
@@ -140,7 +142,7 @@ internal sealed class MacroListeningService : BackgroundService
         }
         else
         {
-            Logger.Info($"{e.Author} used unknown macro '{command}' in {channel}");
+            _logger.LogInformation("{Author} used unknown macro \'{Command}\' in {Channel}", e.Author, command, channel);
 
             if (unknownEmoji is not null)
                 await e.Message.CreateReactionAsync(unknownEmoji).ConfigureAwait(false);

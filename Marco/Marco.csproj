@@ -38,8 +38,10 @@
         </PackageReference>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.5"/>
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1"/>
-        <PackageReference Include="NLog" Version="5.1.4"/>
-        <PackageReference Include="NLog.Extensions.Logging" Version="5.2.3"/>
+        <PackageReference Include="Serilog" Version="3.1.1"/>
+        <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0"/>
+        <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1"/>
+        <PackageReference Include="Serilog.Sinks.File" Version="5.0.0"/>
         <PackageReference Include="SmartFormat.NET" Version="3.2.1"/>
         <PackageReference Include="X10D" Version="4.0.0-nightly.236"/>
         <PackageReference Include="X10D.DSharpPlus" Version="4.0.0-nightly.236"/>
