@@ -7,7 +7,7 @@ using Marco.Data;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using NLog;
+using Microsoft.Extensions.Logging;
 using X10D.Collections;
 
 namespace Marco.Services;
@@ -17,7 +17,7 @@ namespace Marco.Services;
 /// </summary>
 internal sealed class MacroService : BackgroundService
 {
-    private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+    private readonly ILogger<MacroService> _logger;
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly DiscordClient _discordClient;
     private readonly Dictionary<DiscordGuild, Dictionary<string, Macro>> _macros = new();
@@ -25,10 +25,12 @@ internal sealed class MacroService : BackgroundService
     /// <summary>
     ///     Initializes a new instance of the <see cref="MacroService" /> class.
     /// </summary>
+    /// <param name="logger">The logger.</param>
     /// <param name="scopeFactory">The scope factory.</param>
     /// <param name="discordClient">The Discord client.</param>
-    public MacroService(IServiceScopeFactory scopeFactory, DiscordClient discordClient)
+    public MacroService(ILogger<MacroService> logger, IServiceScopeFactory scopeFactory, DiscordClient discordClient)
     {
+        _logger = logger;
         _scopeFactory = scopeFactory;
         _discordClient = discordClient;
     }
@@ -324,7 +326,7 @@ internal sealed class MacroService : BackgroundService
                 macros[aliases[index]] = macro;
         }
 
-        Logger.Info($"Loaded {macros.Count} macros for {guild}");
+        _logger.LogInformation("Loaded {Count} macros for {Guild}", macros.Count, guild);
     }
 
     /// <inheritdoc />

@@ -10,14 +10,17 @@ namespace Marco.Commands;
 internal sealed class MacroCommand : ApplicationCommandModule
 {
     private readonly MacroService _macroService;
+    private readonly MacroCooldownService _cooldownService;
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="MacroCommand" /> class.
     /// </summary>
     /// <param name="macroService">The macro service.</param>
-    public MacroCommand(MacroService macroService)
+    /// <param name="cooldownService">The cooldown service.</param>
+    public MacroCommand(MacroService macroService, MacroCooldownService cooldownService)
     {
         _macroService = macroService;
+        _cooldownService = cooldownService;
     }
 
     [SlashCommand("macro", "Executes a macro.")]
@@ -32,9 +35,16 @@ internal sealed class MacroCommand : ApplicationCommandModule
             return;
         }
 
-        if (macro.ChannelId.HasValue && macro.ChannelId.Value != context.Channel.Id)
+        DiscordChannel channel = context.Channel;
+
+        if (macro.ChannelId.HasValue && macro.ChannelId.Value != channel.Id)
         {
             await context.CreateResponseAsync($"The macro `{macroName}` cannot be executed here.", true).ConfigureAwait(false);
+            return;
+        }
+        if (_cooldownService.IsOnCooldown(channel, macro))
+        {
+            await context.CreateResponseAsync($"The macro `{macroName}` is on cooldown because it was very recently executed.", true).ConfigureAwait(false);
             return;
         }
 
@@ -49,5 +59,6 @@ internal sealed class MacroCommand : ApplicationCommandModule
 
         builder.WithContent(response);
         await context.CreateResponseAsync(builder).ConfigureAwait(false);
+        _cooldownService.UpdateCooldown(channel, macro);
     }
 }
